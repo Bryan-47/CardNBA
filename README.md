@@ -2,16 +2,16 @@
 
 Fonctionalitées : 
 
-Creation de compte.
-Première album.
-Debloquer des albums.
-Système de saisons avec les albums.
-Système de saisons avec les packs. 
-Achats de pack.
-Vente de carte.
-Succès.
-Carte exclusive personalisable.
-Mode MyTeam comme dans le jeux nba2k.
+- Creation de compte.
+- Première album.
+- Debloquer des albums.
+- Système de saisons avec les albums.
+- Système de saisons avec les packs. 
+- Achats de pack.
+- Vente de carte.
+- Succès.
+- Carte exclusive personalisable.
+- Mode MyTeam comme dans le jeux nba2k.
 
 
 Problème Résolu : 
