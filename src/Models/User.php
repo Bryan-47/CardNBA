@@ -4,43 +4,34 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Services\AppService;
-use PDOException;
-
+/** Entité : un utilisateur de l'application. */
 final class User
 {
-    /** Crée un compte. Retourne son id, ou null si l'email ou le pseudo existe déjà. */
-    public function create(string $username, string $email, string $password): ?int
-    {
-        $requete = AppService::db()->prepare(
-            'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)'
-        );
-
-        try {
-            $requete->execute([$username, $email, password_hash($password, PASSWORD_DEFAULT)]);
-        } catch (PDOException $e) {
-            if ($e->getCode() === '23000') { // violation d'unicité
-                return null;
-            }
-            throw $e;
-        }
-
-        return (int) AppService::db()->lastInsertId();
+    public function __construct(
+        private readonly int $id,
+        private readonly string $username,
+        private readonly string $email,
+        private readonly string $passwordHash,
+    ) {
     }
 
-    /** Retourne l'utilisateur (id, username) si email + mot de passe sont corrects, sinon null. */
-    public function authentifier(string $email, string $password): ?array
+    public function getId(): int
     {
-        $requete = AppService::db()->prepare(
-            'SELECT id, username, password_hash FROM users WHERE email = ?'
-        );
-        $requete->execute([$email]);
-        $utilisateur = $requete->fetch();
+        return $this->id;
+    }
 
-        if ($utilisateur === false || !password_verify($password, $utilisateur['password_hash'])) {
-            return null;
-        }
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
 
-        return ['id' => (int) $utilisateur['id'], 'username' => $utilisateur['username']];
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function verifyPassword(string $password): bool
+    {
+        return password_verify($password, $this->passwordHash);
     }
 }

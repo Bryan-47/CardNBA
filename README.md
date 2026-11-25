@@ -1,65 +1,42 @@
-# CardNBA Adredalyn
+# CardNBA
 
-Fonctionalitées : 
+Version réduite à un **système de login**, avec une architecture **MVC** en **POO**.
+PHP 8.2 · Slim 4 · MySQL (PDO) · Docker.
 
-- Creation de compte.
-- Première album.
-- Debloquer des albums.
-- Système de saisons avec les albums.
-- Système de saisons avec les packs. 
-- Achats de pack.
-- Vente de carte.
-- Succès.
-- Carte exclusive personalisable.
-- Mode MyTeam comme dans le jeux nba2k.
-
-
-Problème Résolu : 
-Cette application servira au utilisateurs, passionné de basket et de carte à collectionné, de jouer à un jeux, totalement gratuit. 
-Ce jeux permettra de collectionné des cartes virutelle de joueurs nba et de créer une dream team, comme dans le jeux nba2k. Ainsi, les joueurs
-n'ayant pas d'argent pour acheter le jeux, pourra utiliser l'application qui elle est gratuite. 
-
----
-
-## Version minimale actuelle
-
-Mini jeu de collection de cartes NBA : on s'inscrit, on ouvre des packs de 5 cartes aléatoires
-et on suit son album. PHP 8 · Slim 4 · MySQL (PDO) · Docker.
-
-### Démarrage
+## Démarrage
 
 ```bash
+cp config/env/.env.conf .env      # puis renseigner DB_PASS et MYSQL_ROOT_PASSWORD
 docker compose up -d --build
 docker compose exec web composer install
 ```
 
-Puis ouvrir **http://localhost:8080**.
-Au premier lancement, MySQL crée les tables et charge 90 joueurs (`config/db/init.sql`).
-Pour rejouer ce script (schéma modifié) : `docker compose down -v` puis relancer.
+Ouvrir **http://localhost:8080**.
+Pour rejouer `config/db/init.sql` (schéma modifié) : `docker compose down -v` puis relancer.
 
-Le fichier `.env` est fourni ; le modèle est `config/env/.env.conf`.
-Avec `APP_ENV=local`, les erreurs affichent leur détail.
-
-### Fonctionnalités
+## Routes
 
 | URL | Méthode | Rôle |
 |---|---|---|
 | `/signup` | GET, POST | inscription |
 | `/login` | GET, POST | connexion (email + mot de passe) |
-| `/logout` | GET | déconnexion |
-| `/` | GET | album : progression, dernier pack ouvert, liste des joueurs (connecté) |
-| `/pack` | POST | ouvre un pack de 5 cartes (connecté) |
+| `/logout` | POST | déconnexion (connecté) |
+| `/` | GET | page d'accueil protégée (connecté) |
 
-### Structure
+## Architecture
 
 ```
-public/index.php                  point d'entrée (Slim, .env, session)
-src/Routes/Routes.php             les 7 routes
-src/Controllers/AuthController    inscription, connexion, déconnexion
-src/Controllers/AlbumController   album + ouverture de pack
-src/Models/User                   création de compte, authentification
-src/Models/Collection             tirage du pack, album de l'utilisateur
-src/Services/AppService           connexion PDO, rendu des vues, redirection
-src/Views/                        layout, auth (login + signup), album
-config/db/init.sql                tables + 90 joueurs
+public/index.php                    point d'entrée (.env, session, Slim)
+src/Routes/Routes.php               routes + assemblage des objets
+src/Controllers/Controller          classe de base (render, redirect)
+src/Controllers/AuthController      login, signup, logout
+src/Controllers/HomeController      page protégée
+src/Models/Model                    classe de base : connexion PDO
+src/Models/User                     entité utilisateur
+src/Models/UserRepository           accès à la table users
+src/Services/AuthService            logique métier : inscription, connexion, session
+src/Views/                          layout, login, signup, home
+config/db/init.sql                  table users
 ```
+
+Flux d'une requête : **Route → Controller → Service → Model → View**.

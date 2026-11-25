@@ -12,6 +12,7 @@ session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax']);
 session_start();
 
 $app = AppFactory::create();
+$app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(($_ENV['APP_ENV'] ?? 'prod') === 'local', true, true);
 
